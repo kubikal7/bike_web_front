@@ -1,0 +1,69 @@
+.details-container {
+    padding: 2rem;
+    font-family: Arial, sans-serif;
+}
+
+.details-container h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 2rem;
+}
+
+.stations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.station-card {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    min-height: 300px;  /* Zapewnia minimalną wysokość dla kafelka */
+    justify-content: space-between; /* Układa elementy w kafelku, aby były na dole */
+}
+
+.station-card h2 {
+    margin: 0 0 1rem;
+}
+
+.station-card p {
+    margin: 0.3rem 0;
+}
+
+.map-link {
+    display: inline-block;
+    margin-top: 0.8rem;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.map-link:hover {
+    text-decoration: underline;
+}
+
+.favorite-button {
+    background-color: #ff4c4c;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background-color 0.3s;
+    margin-bottom: 10px; /* Zapewnia przestrzeń na dole kafelka */
+}
+
+.favorite-button:hover {
+    background-color: #e03e3e;
+}
+
+.favorite-button:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(255, 76, 76, 0.7);
+}

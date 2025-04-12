@@ -1,0 +1,105 @@
+.user-info-container {
+    padding: 1.5rem;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .user-info-container h1 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+  
+  .user-info-container label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: #555;
+  }
+  
+  .user-info-container input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+  }
+  
+  .user-info-container button {
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: #fff;
+    transition: background-color 0.3s ease;
+  }
+  
+  .user-info-container button:hover {
+    background-color: #0056b3;
+  }
+  
+  .user-info-container button + button {
+    margin-left: 1rem;
+    background-color: #6c757d;
+  }
+  
+  .user-info-container button + button:hover {
+    background-color: #5a6268;
+  }
+  
+  .user-info-container p {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+    color: #333;
+  }
+  
+  .user-info-container p strong {
+    font-weight: bold;
+    color: #555;
+  }
+  
+  .reservations-container {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+  }
+  
+  .reservations-container h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+  
+  .reservations-container ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .reservations-container li {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+    color: #333;
+  }
+  
+  .reservations-container li strong {
+    font-weight: bold;
+  }
+  
+  .reservations-container a {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+    margin-left: 0.5rem;
+  }
+  
+  .reservations-container a:hover {
+    text-decoration: underline;
+  }
