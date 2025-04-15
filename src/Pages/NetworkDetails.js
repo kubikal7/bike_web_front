@@ -5,59 +5,73 @@ import Layout from "../Components/Layout";
 
 const NetworkDetails = () => {
   const { id } = useParams();
-  const [stations, setStations] = useState([]);
-  const [city, setCity] = useState('');
-  const token = localStorage.getItem('token');  // pobieramy token użytkownika z localStorage
+const [stations, setStations] = useState([]);
+const [city, setCity] = useState('');
+const [searchTerm, setSearchTerm] = useState('');
+const token = localStorage.getItem('token');
 
-  useEffect(() => {
-    fetch(`https://api.citybik.es/v2/networks/${id}`)
-      .then(res => res.json())
-      .then(data => {
-        setStations(data.network.stations);
-        setCity(data.network.location.city);
-      })
-      .catch(err => console.error("Error:", err));
-  }, [id]);
-
-  const saveToFavorites = (stationId, networkId) => {
-    if (!token) {
-      alert("Nie jesteś zalogowany!");
-      return;
-    }
-
-    const requestBody = {
-      stationId: stationId,
-      networkId: networkId,
-      token: token
-    };
-
-    fetch('http://localhost:8080/favspots/save', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(requestBody)
+useEffect(() => {
+  fetch(`https://api.citybik.es/v2/networks/${id}`)
+    .then(res => res.json())
+    .then(data => {
+      setStations(data.network.stations);
+      setCity(data.network.location.city);
     })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          alert("Stacja została dodana do ulubionych!");
-        } else {
-          alert("Błąd podczas zapisywania stacji.");
-        }
-      })
-      .catch(err => {
-        console.error("Błąd:", err);
-        alert("Wystąpił problem z zapisem.");
-      });
+    .catch(err => console.error("Error:", err));
+}, [id]);
+
+const saveToFavorites = (stationId, networkId) => {
+  if (!token) {
+    alert("Nie jesteś zalogowany!");
+    return;
+  }
+
+  const requestBody = {
+    stationId: stationId,
+    networkId: networkId,
+    token: token
   };
 
-  return (
-    <Layout>
+  fetch('http://localhost:8080/favspots/save', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(requestBody)
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert("Stacja została dodana do ulubionych!");
+      } else {
+        alert("Błąd podczas zapisywania stacji.");
+      }
+    })
+    .catch(err => {
+      console.error("Błąd:", err);
+      alert("Wystąpił problem z zapisem.");
+    });
+};
+
+const filteredStations = stations.filter(station =>
+  station.name.toLowerCase().includes(searchTerm.toLowerCase())
+);
+
+return (
+  <Layout>
     <div className="details-container">
       <h1>Stacje rowerowe - {city}</h1>
+
+      <input
+        type="text"
+        placeholder="Szukaj stacji..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="bike-search-input"
+      />
+
       <div className="stations-grid">
-        {stations.map(station => (
+        {filteredStations.map(station => (
           <div key={station.id} className="station-card">
             <h2>{station.name}</h2>
             <p>🚲 Dostępne rowery: {station.free_bikes}</p>
@@ -80,8 +94,9 @@ const NetworkDetails = () => {
         ))}
       </div>
     </div>
-    </Layout>
-  );
+  </Layout>
+);
+
 };
 
 export default NetworkDetails;

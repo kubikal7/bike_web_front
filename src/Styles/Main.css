@@ -52,3 +52,15 @@
     font-size: 1.4rem;
     margin: 0;
   }
+
+  .bike-search-input {
+    display: block;
+    width: 100%;
+    max-width: 400px;
+    padding: 0.5rem 1rem;
+    margin: 1rem auto;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+  
