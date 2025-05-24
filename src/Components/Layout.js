@@ -13,7 +13,7 @@ function Layout({ children }) {
     };
 
     // Sprawdzamy, czy token jest zapisany w localStorage
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token') || ''
 
   const [isAdmin, setIsAdmin] = useState(null);
   useEffect(() => {

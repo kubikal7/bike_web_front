@@ -2,55 +2,99 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import '../Styles/NetworkDetails.css';
 import Layout from "../Components/Layout";
+import axios from "axios";
 
 const NetworkDetails = () => {
   const { id } = useParams();
-const [stations, setStations] = useState([]);
-const [city, setCity] = useState('');
-const [searchTerm, setSearchTerm] = useState('');
-const token = localStorage.getItem('token');
+  const [stations, setStations] = useState([]);
+  const [city, setCity] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const token = localStorage.getItem('token');
+  const [filteredFavStations, setFilteredFavStations] = useState([]);
 
 useEffect(() => {
-  fetch(`https://api.citybik.es/v2/networks/${id}`)
-    .then(res => res.json())
-    .then(data => {
-      setStations(data.network.stations);
-      setCity(data.network.location.city);
-    })
-    .catch(err => console.error("Error:", err));
+  const fetchData = async () => {
+    try {
+      const bikeResponse = await axios.get(`https://api.citybik.es/v2/networks/${id}`);
+      setStations(bikeResponse.data.network.stations);
+      setCity(bikeResponse.data.network.location.city);
+
+      const favPlacesResponse = await axios.get('http://localhost:8080/user/get-all-fav-places',
+      {
+        headers: {
+          'Authorization': token,
+        }
+      });
+
+      const favPlaces = favPlacesResponse.data;
+      const filteredFavs = favPlaces.filter(place => place.name === id);
+      setFilteredFavStations(filteredFavs);
+
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  fetchData();
 }, [id]);
 
-const saveToFavorites = (stationId, networkId) => {
+const saveToFavorites = async (stationId, networkId) => {
   if (!token) {
     alert("Nie jesteś zalogowany!");
     return;
   }
 
   const requestBody = {
-    stationId: stationId,
-    networkId: networkId,
-    token: token
+    spotId: stationId,
+    name: networkId
   };
 
-  fetch('http://localhost:8080/favspots/save', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(requestBody)
-  })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        alert("Stacja została dodana do ulubionych!");
-      } else {
-        alert("Błąd podczas zapisywania stacji.");
-      }
-    })
-    .catch(err => {
-      console.error("Błąd:", err);
-      alert("Wystąpił problem z zapisem.");
+  try {
+    const response = await axios.post('http://localhost:8080/add-fav-place',
+      requestBody,
+      {
+      headers: {
+        'Authorization': token,
+      },
     });
+
+  } catch (error) {
+    alert("Error!");
+    return false;
+  }
+  setFilteredFavStations(prevFavs => [
+    ...prevFavs,
+    { spotId: stationId, name: networkId }  // Dodajemy nową stację do ulubionych
+  ]);
+};
+
+const deleteFromFavorites = async (stationId, networkId) => {
+  if (!token) {
+    alert("Nie jesteś zalogowany!");
+    return;
+  }
+
+  const requestBody = {
+    spotId: stationId,
+    name: networkId
+  };
+
+  try {
+    const response = await axios.delete('http://localhost:8080/del-fav-place',
+      {
+      headers: {
+        'Authorization': token,
+      },
+      data: requestBody,
+    });
+
+  } catch (error) {
+    alert("Error!");
+    return false;
+  }
+  setFilteredFavStations(prevFavs => 
+    prevFavs.filter(fav => fav.spotId !== stationId || fav.name !== networkId)
+  );
 };
 
 const filteredStations = stations.filter(station =>
@@ -84,12 +128,25 @@ return (
             >
               Zobacz na mapie 📍
             </a>
+            {filteredFavStations.some(fav => fav.spotId === station.id) ? (
+          <button
+            onClick={() => deleteFromFavorites(station.id, id)}
+            className="favorite-button saved"
+            style={{
+              backgroundColor: '#ccc',
+              cursor: 'pointer'
+            }}
+          >
+            ✅ Zapisane
+          </button>
+          ) : (
             <button
               onClick={() => saveToFavorites(station.id, id)}
               className="favorite-button"
             >
               ❤️ Zapisz
             </button>
+          )}
           </div>
         ))}
       </div>
