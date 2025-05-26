@@ -6,6 +6,7 @@ import "../Styles/User.css"
 function User() {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [successMessage, setSuccessMessage] = useState("");
   const [error, setError] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [editData, setEditData] = useState({
@@ -13,6 +14,7 @@ function User() {
     surname: '',
     email: '',
   });
+  
 
   useEffect(() => {
     const token = localStorage.getItem('token') || '';
@@ -66,21 +68,17 @@ function User() {
         editData,
         { headers: { Authorization: token } }
       );
-      alert('Zmiany zostały zapisane!');
+      setSuccessMessage('Zmiany zostały zapisane!');
       setUserData({ ...userData, ...editData });
       setEditMode(false);
     } catch (err) {
       console.error('Błąd zapisywania zmian:', err);
-      alert('Nie udało się zapisać zmian.');
+      setError('Nie udało się zapisać zmian.');
     }
   };
 
   if (loading) {
     return <div>Ładowanie...</div>;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
   }
 
   if (!userData) {
@@ -91,6 +89,8 @@ function User() {
     <Layout>
       <div className="user-info-container">
         <h1>Informacje o użytkowniku</h1>
+        {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
+        {error && <p style={{ color: "red" }}>{error}</p>}
         {editMode ? (
           <div>
             <label>

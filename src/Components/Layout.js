@@ -4,24 +4,37 @@ import { useNavigate, Link } from 'react-router-dom';
 import { checkAdminStatus } from '../Scripts/checkAdmin';
 
 function Layout({ children }) {
-    const navigate = useNavigate(); // Hook do nawigacji
+  const navigate = useNavigate();
+  const [token, setToken] = useState(localStorage.getItem('token') || '');
+  const [isAdmin, setIsAdmin] = useState(null);
   
     // Funkcja do wylogowania (czyszczenie tokenu z localStorage)
-    const handleLogout = () => {
-      localStorage.removeItem('token'); // Usuwamy token
-      navigate('/'); // Programowo przekierowujemy na stronę główną
-    };
+  const handleLogout = () => {
+    localStorage.removeItem('token'); // Usuwamy token
+    setToken('');
+    setIsAdmin(false)
+    navigate('/'); // Programowo przekierowujemy na stronę główną
+  };
 
-    // Sprawdzamy, czy token jest zapisany w localStorage
-    const token = localStorage.getItem('token') || ''
-
-  const [isAdmin, setIsAdmin] = useState(null);
   useEffect(() => {
-    if(!token) return;
+    if (!token) return;
+
     (async () => {
-      setIsAdmin(await checkAdminStatus(token) ? true : false);
+      try {
+        const isAdmin = await checkAdminStatus(token);
+        setIsAdmin(isAdmin);
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          alert("Sesja wygasła lub nie masz uprawnień administratora.");
+          localStorage.removeItem("token");
+          setIsAdmin(false);
+        } else {
+          console.error("Błąd podczas sprawdzania statusu admina:", error);
+        }
+      }
     })();
   }, [token]);
+
 
   return (
     <div className="layout-container">
@@ -34,6 +47,7 @@ function Layout({ children }) {
           {token && (
             <>
                 <li><Link to="/user">Profil</Link></li>
+                <li><Link to="/fav-spots">Zapisane</Link></li>
                 <li><button onClick={handleLogout}>Wyloguj się</button></li>
             </>
           )}

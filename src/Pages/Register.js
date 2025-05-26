@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import Layout from '../Components/Layout';
 import "../Styles/Login.css"
 
 function Register() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     surname: '',
@@ -23,8 +25,33 @@ function Register() {
     }));
   };
 
+  const validateForm = () => {
+    if (!formData.name.trim()) {
+      setError('Imię nie może być puste');
+      return false;
+    }
+    if (!formData.surname.trim()) {
+      setError('Nazwisko nie może być puste');
+      return false;
+    }
+    if (!(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))) {
+      setError('Niepoprawny format adresu email');
+      return false;
+    }
+    if (formData.password.length < 8) {
+      setError('Hasło musi mieć co najmniej 8 znaków');
+      return false;
+    }
+    setError(null);
+    return true;
+  };
+
   const handleClick = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
 
     try {
       const response = await axios.post(
@@ -38,9 +65,14 @@ function Register() {
       );
 
       if (response.status === 200) {
-        alert('Rejestracja zakończona sukcesem!');
+        navigate('/login');
       }
+
     } catch (error) {
+      if(error.response.status === 409){
+        setError('Użytkownik o podanym e-mailu już istnieje')
+        return
+      }
       setError('Błąd rejestracji: ' + (error.response ? error.response.data.message : error.message));
     }
   };

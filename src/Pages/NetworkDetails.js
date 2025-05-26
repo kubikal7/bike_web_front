@@ -11,6 +11,8 @@ const NetworkDetails = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const token = localStorage.getItem('token');
   const [filteredFavStations, setFilteredFavStations] = useState([]);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [error, setError] = useState("");
 
 useEffect(() => {
   const fetchData = async () => {
@@ -19,16 +21,19 @@ useEffect(() => {
       setStations(bikeResponse.data.network.stations);
       setCity(bikeResponse.data.network.location.city);
 
-      const favPlacesResponse = await axios.get('http://localhost:8080/user/get-all-fav-places',
-      {
-        headers: {
-          'Authorization': token,
-        }
-      });
+      if(token){
+        const favPlacesResponse = await axios.get('http://localhost:8080/user/get-all-fav-places',
+        {
+          headers: {
+            'Authorization': token,
+          }
+        });
 
-      const favPlaces = favPlacesResponse.data;
-      const filteredFavs = favPlaces.filter(place => place.name === id);
-      setFilteredFavStations(filteredFavs);
+        const favPlaces = favPlacesResponse.data;
+        const filteredFavs = favPlaces.filter(place => place.name === id);
+        setFilteredFavStations(filteredFavs);
+      }
+
 
     } catch (error) {
       console.error("Error:", error);
@@ -40,7 +45,7 @@ useEffect(() => {
 
 const saveToFavorites = async (stationId, networkId) => {
   if (!token) {
-    alert("Nie jesteś zalogowany!");
+    setError("Nie jesteś zalogowany!");
     return;
   }
 
@@ -59,7 +64,7 @@ const saveToFavorites = async (stationId, networkId) => {
     });
 
   } catch (error) {
-    alert("Error!");
+    setError("Error!");
     return false;
   }
   setFilteredFavStations(prevFavs => [
@@ -70,7 +75,7 @@ const saveToFavorites = async (stationId, networkId) => {
 
 const deleteFromFavorites = async (stationId, networkId) => {
   if (!token) {
-    alert("Nie jesteś zalogowany!");
+    setError("Nie jesteś zalogowany!");
     return;
   }
 
@@ -89,7 +94,7 @@ const deleteFromFavorites = async (stationId, networkId) => {
     });
 
   } catch (error) {
-    alert("Error!");
+    setError("Error!");
     return false;
   }
   setFilteredFavStations(prevFavs => 
@@ -105,7 +110,8 @@ return (
   <Layout>
     <div className="details-container">
       <h1>Stacje rowerowe - {city}</h1>
-
+      {successMessage && <p style={{ color: "green", textAlign: "center" }}>{successMessage}</p>}
+      {error && <p style={{ color: "red", textAlign: "center" }}>{error}</p>}
       <input
         type="text"
         placeholder="Szukaj stacji..."

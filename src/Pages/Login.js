@@ -10,6 +10,9 @@ function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+
   const handleLogin = async () => {
     try {
       const credentials = {
@@ -25,14 +28,14 @@ function Login() {
           localStorage.setItem('token', token);
           navigate('/')
         } else {
-          alert('Nie otrzymano tokenu!');
+          setError('Nie otrzymano tokenu!');
         }
       } else {
-        alert('Błąd logowania');
+        setError('Błąd logowania');
       }
     } catch (error) {
       console.error('Błąd logowania:', error);
-      alert('Błąd logowania');
+      setError('Błąd logowania');
     }
   };
 
@@ -40,6 +43,8 @@ function Login() {
     <Layout>
       <div className="form-container">
       <h2>Logowanie</h2>
+      {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
       <div>
         <label htmlFor="email">Email</label>
         <input
