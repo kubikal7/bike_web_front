@@ -64,3 +64,14 @@
     font-size: 1rem;
   }
   
+  .bike-error {
+  color: red;
+  text-align: center;
+  margin: 20px;
+}
+
+.bike-empty {
+  text-align: center;
+  font-style: italic;
+  color: #666;
+}

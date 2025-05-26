@@ -23,8 +23,8 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
-    min-height: 300px;  /* Zapewnia minimalną wysokość dla kafelka */
-    justify-content: space-between; /* Układa elementy w kafelku, aby były na dole */
+    min-height: 300px; 
+    justify-content: space-between;
 }
 
 .station-card h2 {
@@ -56,7 +56,7 @@
     cursor: pointer;
     margin-top: 1rem;
     transition: background-color 0.3s;
-    margin-bottom: 10px; /* Zapewnia przestrzeń na dole kafelka */
+    margin-bottom: 10px;
 }
 
 .favorite-button:hover {
