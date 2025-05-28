@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import '../Styles/NetworkDetails.css';
-import '../Styles/Main.css'
+import '../Styles/Main.css';
 import Layout from "../Components/Layout";
 import axios from "axios";
 
@@ -22,18 +22,24 @@ const NetworkDetails = () => {
       try {
         const bikeResponse = await axios.get(`https://api.citybik.es/v2/networks/${id}`);
 
-        if (!bikeResponse.data?.network?.stations || !Array.isArray(bikeResponse.data.network.stations)) {
+        if (
+          !bikeResponse.data.network ||
+          !Array.isArray(bikeResponse.data.network.stations)
+        ) {
           throw new Error("Nieprawidłowe dane z API CityBik.es");
         }
 
-        setStations(bikeResponse.data.network.stations);
-        setCity(bikeResponse.data.network.location.city);
+        const validStations = bikeResponse.data.network.stations.filter(station =>
+          station &&
+          typeof station.id === 'string'
+        );
+
+        setStations(validStations);
+        setCity(bikeResponse.data.network.location.city || "Nieznane miasto");
 
         if (token) {
           const favPlacesResponse = await axios.get('http://localhost:8080/user/get-all-fav-places', {
-            headers: {
-              'Authorization': token,
-            }
+            headers: { 'Authorization': token }
           });
 
           const favPlaces = favPlacesResponse.data;
@@ -58,20 +64,13 @@ const NetworkDetails = () => {
       return;
     }
 
-    const requestBody = {
-      spotId: stationId,
-      name: networkId
-    };
-
     try {
+      const requestBody = { spotId: stationId, name: networkId };
       await axios.post('http://localhost:8080/add-fav-place', requestBody, {
-        headers: { 'Authorization': token },
+        headers: { 'Authorization': token }
       });
 
-      setFilteredFavStations(prevFavs => [
-        ...prevFavs,
-        { spotId: stationId, name: networkId }
-      ]);
+      setFilteredFavStations(prev => [...prev, requestBody]);
     } catch (error) {
       setError("Błąd podczas zapisywania ulubionej stacji.");
     }
@@ -83,19 +82,15 @@ const NetworkDetails = () => {
       return;
     }
 
-    const requestBody = {
-      spotId: stationId,
-      name: networkId
-    };
-
     try {
+      const requestBody = { spotId: stationId, name: networkId };
       await axios.delete('http://localhost:8080/del-fav-place', {
         headers: { 'Authorization': token },
-        data: requestBody,
+        data: requestBody
       });
 
-      setFilteredFavStations(prevFavs =>
-        prevFavs.filter(fav => fav.spotId !== stationId || fav.name !== networkId)
+      setFilteredFavStations(prev =>
+        prev.filter(fav => fav.spotId !== stationId || fav.name !== networkId)
       );
     } catch (error) {
       setError("Błąd podczas usuwania ulubionej stacji.");
